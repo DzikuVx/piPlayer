@@ -1,6 +1,5 @@
-import smbus
-import time
-import os, sys, subprocess, re
+import smbus, time, os, sys, subprocess, re
+from subprocess import Popen, PIPE
 
 def checkIfProcessExists(proc_name):
         ps = subprocess.Popen("ps ax -o pid= -o args= ", shell=True, stdout=subprocess.PIPE)
