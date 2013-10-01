@@ -58,6 +58,10 @@ while 1==1:
         #get current value from register
         currentVal = bus.read_byte(DEVICE_ADDR)
 
+        print currentVal
+
+        ledStates[LED_1] = 1
+
         '''
         Here come actual magic
         '''
@@ -86,15 +90,25 @@ while 1==1:
         if callAction == 'play':
                 # music = os.popen('mpg321 media/01.mp3', 'w')
                 Popen('mpg321 media/01.mp3'.split(' ',1), stdout=PIPE, close_fds=True)
+
+                #lightup play LED (LED_2)
+                ledStates[LED_2] = 1 
+
         elif callAction == 'stop':
                 os.popen('pkill -SIGHUP mpg321 #stop', 'w')
+
+                #turn off play LED (LED_2)
+                ledStates[LED_2] = 0
 
         if callAction != '':
                 currentAction = callAction
         
         callAction = ''
 
-        # print BUTTON_1_CURRENT
+        if BUTTON_1_CURRENT == 1 or BUTTON_2_CURRENT == 1 or BUTTON_3_CURRENT == 1:
+                ledStates[LED_3] = 1
+        else:
+                ledStates[LED_3] = 0    
 
         BUTTON_1_PREV = BUTTON_1_CURRENT
         BUTTON_1_CURRENT = 0
@@ -111,15 +125,7 @@ while 1==1:
         # Write LED states
         for led, val in ledStates.iteritems():
                 writeVal += led * (val^1)
-                # print led, val;
-
-        '''
-        if currentVal & BUTTON_1 == 0:
-                print 'Pressed'
-        else:
-                print 'Not Pressed'   
-        '''
-
+                
         # write to device
         bus.write_byte(DEVICE_ADDR,writeVal)
 
