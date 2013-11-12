@@ -1,5 +1,46 @@
-import smbus, time, os, sys, subprocess, re
+import smbus, time, os, sys, subprocess, re, random
 from subprocess import Popen, PIPE
+
+aFiles = []
+
+iCurrentFile = 0;
+iNumberOfFiles = 0;
+
+sPlayMode = 'sequence'
+
+def loadFileList(directory):
+        for root, dirs, files in os.walk(directory):
+            for file in files:
+                if file.lower().endswith(".mp3"):
+                     aFiles.append(os.path.join(root, file))
+
+        iNumberOfFiles = len(aFiles)
+
+def getCurrentFile():
+        return aFiles[iCurrentFile]
+
+def getRandomFile():
+        global iCurrentFile
+        iCurrentFile = random.randrange(0, len(aFiles))
+        print iCurrentFile
+        return aFiles[iCurrentFile]
+
+def getNextFile():
+        global iCurrentFile
+        iCurrentFile += 1
+        if iCurrentFile > iNumberOfFiles:
+                iCurrentFile = 0
+
+        return aFiles[iCurrentFile]        
+
+def getPrevFile():
+        global iCurrentFile
+        iCurrentFile -= 1
+        if iCurrentFile < 0 :
+                iCurrentFile = iNumberOfFiles
+
+        return aFiles[iCurrentFile]        
+
 
 def checkIfProcessExists(proc_name):
         ps = subprocess.Popen("ps ax -o pid= -o args= ", shell=True, stdout=subprocess.PIPE)
@@ -54,11 +95,15 @@ bus.write_byte(DEVICE_ADDR,writeVal)
 callAction = ''
 currentAction = 'stop'
 
+loadFileList(os.path.dirname(os.path.realpath(__file__)) + '/media/')
+
 while 1==1:
+        # print checkIfProcessExists('mpg321')
+
         #get current value from register
         currentVal = bus.read_byte(DEVICE_ADDR)
 
-        print currentVal
+        # print currentVal
 
         ledStates[LED_1] = 1
 
@@ -85,11 +130,19 @@ while 1==1:
                 else:
                         callAction = 'stop'
 
-        print callAction
+        if (BUTTON_4_CURRENT == 1) & (BUTTON_4_PREV == 0):
+                #begin random mode
+                sPlayMode = 'random'
+                callAction = 'play'
+                getRandomFile()                
+        
+        if callAction != '':       
+                print callAction
 
         if callAction == 'play':
-                # music = os.popen('mpg321 media/01.mp3', 'w')
-                Popen('mpg321 media/01.mp3'.split(' ',1), stdout=PIPE, close_fds=True)
+                os.popen('pkill -SIGHUP mpg321 #stop', 'w')
+                sCommad = 'mpg321 ' + getCurrentFile()
+                Popen(sCommad.split(' ',1), stdout=PIPE, close_fds=True)
 
                 #lightup play LED (LED_2)
                 ledStates[LED_2] = 1 
