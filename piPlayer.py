@@ -65,10 +65,10 @@ BUS_NUMBER = 1
 # define device address
 DEVICE_ADDR = 0x20
 
-BUTTON_1 = 1
-BUTTON_2 = 2
-BUTTON_3 = 4
-BUTTON_4 = 8
+BUTTON_1 = 1 # PLAY/STOP
+BUTTON_2 = 2 # Prev
+BUTTON_3 = 4 # Next
+BUTTON_4 = 8 # PlayRandom / NextRandom
 
 BUTTON_1_CURRENT = 0
 BUTTON_1_PREV = 0
@@ -79,10 +79,10 @@ BUTTON_3_PREV = 0
 BUTTON_4_CURRENT = 0
 BUTTON_4_PREV = 0
 
-LED_1 = 16
-LED_2 = 32
-LED_3 = 64
-LED_4 = 128
+LED_1 = 16 #Status LED, lighted up when piPlayer starts
+LED_2 = 32 #Status LED, lighted up when piPlayer is playing music
+LED_3 = 64 #Status LED, lighted up any of buttons is pressed
+LED_4 = 128 #Status LED, lighted up when random mode is selected
 
 ledStates = {LED_1: 0, LED_2: 0, LED_3: 0, LED_4: 0}
 
@@ -96,6 +96,8 @@ callAction = ''
 currentAction = 'stop'
 
 loadFileList(os.path.dirname(os.path.realpath(__file__)) + '/media/')
+
+previousProcessExists = False
 
 while 1==1:
         # print checkIfProcessExists('mpg321')
@@ -124,7 +126,7 @@ while 1==1:
                 BUTTON_4_CURRENT = 1
 
         if (BUTTON_1_CURRENT == 1) & (BUTTON_1_PREV == 0):
-                #here....
+                #PLAY button pressed
                 if currentAction == 'stop':
                         callAction = 'play'
                 else:
@@ -136,6 +138,7 @@ while 1==1:
                 callAction = 'play'
                 getRandomFile()                
         
+        # If action is set, print it
         if callAction != '':       
                 print callAction
 
