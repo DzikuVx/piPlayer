@@ -9,6 +9,8 @@ iNumberOfFiles = 0;
 sPlayMode = 'sequence'
 
 def loadFileList(directory):
+    global iNumberOfFiles
+
     for root, dirs, files in os.walk(directory):
         for file in files:
             if file.lower().endswith(".mp3"):
@@ -30,7 +32,7 @@ def getNextFile():
     global iCurrentFile
     
     iCurrentFile += 1
-    if iCurrentFile > iNumberOfFiles:
+    if iCurrentFile >= iNumberOfFiles:
         iCurrentFile = 0
 
     return aFiles[iCurrentFile]        
@@ -40,7 +42,7 @@ def getPrevFile():
     
     iCurrentFile -= 1
     if iCurrentFile < 0 :
-        iCurrentFile = iNumberOfFiles
+        iCurrentFile = (iNumberOfFiles - 1)
 
     return aFiles[iCurrentFile]        
 
@@ -140,6 +142,18 @@ while 1==1:
         sPlayMode = 'random'
         callAction = 'play'
         getRandomFile()                
+
+    #NEXT button pressed
+    if (BUTTON_2_CURRENT == 1) & (BUTTON_2_PREV == 0):
+        sPlayMode = 'sequence'
+        getPrevFile()
+        callAction = 'play'
+
+    #NEXT button pressed
+    if (BUTTON_3_CURRENT == 1) & (BUTTON_3_PREV == 0):
+        sPlayMode = 'sequence'
+        getNextFile()
+        callAction = 'play'
 
     # Detect is playing has stopped, and play next song
     currentProcessExists = checkIfProcessExists('mpg321')
