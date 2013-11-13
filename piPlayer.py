@@ -163,10 +163,8 @@ while 1==1:
 
         if sPlayMode == 'random' :
             getRandomFile()
-            print 'Call random'
         else:
             getNextFile()
-            print 'Call next'
 
     previousProcessExists = currentProcessExists
     
